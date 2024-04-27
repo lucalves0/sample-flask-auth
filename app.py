@@ -3,7 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = "your_secret_key"
-app.config['SQLALCREMY_DATABASE_URI'] = 'sqlite://database.bd' # caminho da conexão com o banco de dados
+app.config['SQLALCREMY_DATABASE_URI'] = 'sqlite:///database.db' # caminho da conexão com o banco de dados
 
 db = SQLAlchemy(app)    # conexão com API 
 
