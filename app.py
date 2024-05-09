@@ -1,3 +1,4 @@
+import bcrypt
 from flask import Flask, jsonify, request
 from models.user import User
 from database import db
@@ -26,7 +27,7 @@ def login():
         # Login
         user = User.query.filter_by(username=username).first()
 
-        if user and user.password == password:
+        if user and bcrypt.checkpw(str.encode(password), str.encode(user.password)):
                 login_user(user)
                 print(current_user.is_authenticated)
                 return jsonify({"message" : "Autenticação realizada com sucesso"})
@@ -49,7 +50,8 @@ def create_user():
      password = data.get("password")
 
      if username and password:
-          user = User(username=username, password=password, role='user')
+          hashed_password = bcrypt.hashpw(str.encode(password), bcrypt.gensalt())
+          user = User(username=username, password=hashed_password, role='user')
           db.session.add(user)
           db.session.commit()
           return jsonify({"messagem" : "Usuario cadastrado com sucesso !"})
@@ -104,6 +106,25 @@ def delete_user(id_user):
 if __name__ == '__main__':
     app.run(debug=True)
 
+"""
+usaremos a biblioteca 'bcrypt' para criptografar as senhas dos usuários, para
+fins de segurança, caso alguém tenha acesso ao nosso banco de dados . 
+
+exemplo: 
+
+import bcrypt 
+>>> password = b"1234" 
+>>> password
+b'1234'
+>>> hashed = bcrypt.hashpw(password, bcrypt.gensalt()) 
+>>> hashed
+b'$2b$12$12Y/KSlBu2gzBl.tA362puvC1/bzijisXk1Arvu3QCymzWXf4WVeK'
+
+Exemplo abaixo para comparar se uma senha é igual ao hashed criado :
+
+>>> bcrypt.checkpw(b"12345", hashed) 
+
+"""
 """
 Comando para se usar na criação do banco e dentro do banco para realizar as operações
 
